@@ -96,5 +96,62 @@ router.post('/add-user', (req, res) => {
     }
 });
 
+router.put('/user/:id', (req, res) => {
+    try {
+        const user = req.body;
+        const updateQuery = `UPDATE users 
+        SET name='${user.name}',
+        age=${user.age}, 
+        salary=${user.salary},
+        department=(SELECT id FROM departments WHERE name='${user.department}')
+        WHERE id=${req.params.id}`;
+
+        client.query(updateQuery, (err, data) => {
+            // console.log(data);
+            if (!err) {
+                res.status(200).json({
+                    success: true,
+                    message: 'user updated successfully'
+                });
+            } else {
+                res.status(500).json({
+                    success: false,
+                    message: err.message
+                });
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+router.delete('/user/:id', (req, res) => {
+    console.log('api call');
+    try{
+        client.query(`DELETE FROM users WHERE id=${req.params.id}`, (err, data) => {
+            if(!err){
+                console.log(data)
+                res.status(200).json({
+                    success: true,
+                    message: 'user deleted successfully'
+                });
+            }else{
+                res.status(500).json({
+                    success: false,
+                    message: err.message
+                });
+            }
+        });
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+});
+
 
 module.exports = router;
