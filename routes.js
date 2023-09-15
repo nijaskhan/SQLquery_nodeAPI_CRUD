@@ -48,8 +48,8 @@ router.get('/user/:id', (req, res) => {
                         data: data.rows
                     });
                 } else {
-                    res.json({
-                        success: false,
+                    res.status(200).json({
+                        success: true,
                         message: 'No such user'
                     });
                 }
@@ -129,23 +129,45 @@ router.put('/user/:id', (req, res) => {
 });
 
 router.delete('/user/:id', (req, res) => {
-    console.log('api call');
-    try{
+    try {
         client.query(`DELETE FROM users WHERE id=${req.params.id}`, (err, data) => {
-            if(!err){
-                console.log(data)
+            if (!err) {
+                // console.log(data)
                 res.status(200).json({
                     success: true,
                     message: 'user deleted successfully'
                 });
-            }else{
+            } else {
                 res.status(500).json({
                     success: false,
                     message: err.message
                 });
             }
         });
-    }catch(error){
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+});
+
+router.get('/departments', (req, res) => {
+    try {
+        client.query('SELECT * FROM departments', (err, data) => {
+            if (!err) {
+                res.status(200).json({
+                    success: true,
+                    data: data.rows
+                });
+            } else {
+                res.status(500).json({
+                    success: false,
+                    message: err.message
+                });
+            }
+        });
+    } catch (error) {
         res.status(500).json({
             success: false,
             message: error.message
